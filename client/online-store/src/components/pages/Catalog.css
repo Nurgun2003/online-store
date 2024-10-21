@@ -1,0 +1,44 @@
+.Catalog {
+    display: flex;
+    flex-direction: row;
+}
+
+summary {
+    cursor: pointer;
+}
+
+summary > a, details > ul > li > a {
+    text-decoration: none;
+}
+
+#catalog-left {
+    padding: 0 16px;
+}
+#catalog-right {
+    padding: 0 16px;
+}
+
+.catalog-container {
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 3px;
+}
+
+.crumbs ol {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.crumb {
+    display: inline-block;
+}
+
+.crumb a::after {
+    display: inline-block;
+    color: black;
+    content: '>';
+    font-size: 80%;
+    font-weight: bold;
+    padding: 0 3px;
+}

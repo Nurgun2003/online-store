@@ -1,0 +1,72 @@
+details > ul {
+  margin: 0 0;
+  list-style-type: none;
+}
+
+body {
+  background-image: url('./baby-clothes-vectors.jpg');
+}
+
+.Root {
+  width: 100%;
+  min-width: 850px;
+  max-width: 1200px;
+  left: 50%;
+  margin: 0 auto;
+}
+
+.Root > * {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 10px #0005;
+  margin: 10px;
+  padding: 10px;
+}
+
+.logo {
+  text-decoration: none;
+  color: black;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.header > nav {
+  display: flex;
+  justify-content: center;
+}
+.header > nav > a {
+  text-transform: uppercase;
+  padding: 10px;
+}
+.header > nav > .active {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+}
+
+.header > .container {
+  display: flex;
+  justify-content: space-between;
+}
+
+#right {
+  display: flex;
+}
+
+.box {
+  text-align: center;
+  margin: 0 20px;
+}
+
+.middle {
+  min-height: 500px;
+}
+
+form > p > p {
+    color: red;
+    white-space: pre-line;
+}
+
+form > p > * {
+    margin: 0 10px 0 0;
+}

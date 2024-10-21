@@ -1,0 +1,28 @@
+.cart-product {
+    margin: 10px 0;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.cart-product-count > * {
+    margin: 0 5px;
+}
+
+.cart-product > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.cart-product > div > * {
+    margin: 0 0 0 20px;
+}
+
+.cart-product > div > img {
+    margin: 0;
+    width: 100px;
+    height: 100px;
+}
