@@ -1,5 +1,5 @@
 import './Root.css';
-import logo from './logo.png';
+import logo from '../logo.png';
 import { Form, Link, NavLink, Outlet } from 'react-router-dom';
 import { useCartCount } from '../Cart';
 import { useAccount } from '../Account';
