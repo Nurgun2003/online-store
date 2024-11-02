@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom"
-import Products from "../Collection";
+import Products from "../Products";
 
 export default function Search() {
     const searchParams = useSearchParams()[0];

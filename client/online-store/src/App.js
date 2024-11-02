@@ -1,8 +1,8 @@
-import Root from './components/Root';
+import Root, { RootLoader } from './components/Root';
 import NotFound from './components/NotFound';
+import Search from './components/Search';
 import Home from './components/pages/Home';
 import Catalog, { CatalogLoader } from './components/pages/Catalog';
-import Brands from './components/pages/Brands';
 import Delivery from './components/pages/Delivery';
 import Contacts from './components/pages/Contacts';
 import Cart, { CartLoader } from './components/pages/Cart';
@@ -16,14 +16,12 @@ import {
   RouterProvider,
   Route
 } from 'react-router-dom';
-import Search from './components/Search';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<Root />}>
+    <Route path="/" element={<Root />} loader={RootLoader}>
       <Route index element={<Home />} />
       <Route path="catalog/*" element={<Catalog />} loader={CatalogLoader} />
-      <Route path="brands" element={<Brands />} />
       <Route path="delivery" element={<Delivery />} />
       <Route path="contacts" element={<Contacts />} />
       <Route path="cart" element={<Cart />} loader={CartLoader} />

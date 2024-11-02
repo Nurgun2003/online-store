@@ -1,4 +1,4 @@
-import Products from '../../Collection.js';
+import Products from '../../Products.js';
 
 export default function Home() {
     return (

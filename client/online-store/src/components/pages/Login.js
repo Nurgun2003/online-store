@@ -22,7 +22,7 @@ export default function Login() {
             if(response.ok) {
                 const { userid } = await response.json();
                 const { password } = data;
-                fetchUserData({ userid, password });
+                fetchUserData(userid, password);
                 navigate("/");
             }
             else {
@@ -30,12 +30,12 @@ export default function Login() {
                     setError("submit", { type: "manual", message: "Неверный логин или пароль" })
                 }
                 else {
-                    setError("submit", { type: "manual", message: `Ошибка входа: ${response.statusText}.\nПовторите попытку позже.` });
+                    setError("submit", { type: "manual", message: `Произошла ошибка: ${response.statusText}.\nПовторите попытку позже.` });
                 }
             }
         }
         catch(e) {
-            setError("submit", { type: "manual", message: "Сервер недоступен.\nПовторите попытку позже." });
+            setError("submit", { type: "manual", message: "Не удалось обратиться к серверу.\nПовторите попытку позже." });
         }
         setLoading(false);
     }

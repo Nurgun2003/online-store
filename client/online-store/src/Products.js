@@ -1,4 +1,4 @@
-import './Collection.css';
+import './Products.css';
 import { useEffect, useState } from 'react';
 import { AddToCart } from './Cart';
 
@@ -10,7 +10,7 @@ var productPrice = Intl.NumberFormat("ru-RU", {
 function Product(props) {
     return (
         <div className="product">
-            <img src={ `/collection/images/${props.image}` } alt="product" />
+            <img src={ `/products/images/${props.image}` } alt="product" />
             <span>{ props.name }</span>
             <div>
                 <b>{productPrice.format(props.price)}</b>
@@ -24,7 +24,7 @@ export default function Products(props) {
     const [data, setData] = useState();
     const [error, setError] = useState();
     useEffect(() => {
-        fetch(`/collection?${new URLSearchParams(props)}`)
+        fetch(`/products?${new URLSearchParams(props)}`)
             .then(response => {
                 if(response.ok)
                     return response.json();

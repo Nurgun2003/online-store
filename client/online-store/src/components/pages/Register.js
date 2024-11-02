@@ -5,46 +5,47 @@ import { fetchUserData } from '../../Account';
 import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
-    const { register, handleSubmit, setError, formState: { errors } } = useForm();
+    const { register, getValues, handleSubmit, setError, formState: { errors } } = useForm();
     const [ isLoading, setLoading ] = useState(false);
     const navigate = useNavigate();
+    const matchPassword = (value) => {
+        const password = getValues("password");
+        if(value !== password)
+            return "Пароли не совпадают";
+        return true;
+    };
     const onSubmit = async (data) => {
         setLoading(true);
-        if(data.password2 === data.password) {
-            try {
-                const response = await fetch("/users/create", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json; charset=utf-8"
-                    },
-                    body: JSON.stringify(data)
-                });
-                if(response.ok) {
-                    const { userid } = await response.json();
-                    const { password } = data;
-                    fetchUserData({ userid, password });
-                    navigate("/");
-                }
-                else {
-                    if(response.status === 403) {
-                        const json = await response.json();
-                        if(json.occupiedTelephone) {
-                            setError("telephone", { type: "manual", message: "Телефон уже занят" });
-                        }
-                        if(json.occupiedEmail) {
-                            setError("email", { type: "manual", message: "Email уже занят" });
-                        }
-                    }
-                    else
-                        setError("submit", { type: "manual", message: `Ошибка регистрации: ${response.statusText}.\nПовторите попытку позже.` });
-                }
+        try {
+            const response = await fetch("/users/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8"
+                },
+                body: JSON.stringify(data)
+            });
+            if(response.ok) {
+                const { userid } = await response.json();
+                const { password } = data;
+                fetchUserData(userid, password);
+                navigate("/");
             }
-            catch(e) {
-                setError("submit", { type: "manual", message: "Сервер недоступен.\nПовторите попытку позже." });
+            else {
+                if(response.status === 403) {
+                    const json = await response.json();
+                    if(json.occupiedTelephone) {
+                        setError("telephone", { type: "manual", message: "Телефон уже занят" });
+                    }
+                    if(json.occupiedEmail) {
+                        setError("email", { type: "manual", message: "Email уже занят" });
+                    }
+                }
+                else
+                    setError("submit", { type: "manual", message: `Произошла ошибка: ${response.statusText}.\nПовторите попытку позже.` });
             }
         }
-        else {
-            setError("password2", { type: "manual", message: "Пароли не совпадают" });
+        catch(e) {
+            setError("submit", { type: "manual", message: "Не удалось обратиться к серверу.\nПовторите попытку позже." });
         }
         setLoading(false);
     }
@@ -114,13 +115,16 @@ export default function Register() {
                         {errors.password && <p>{errors.password.message}</p>}
                     </p>
                     <p>
-                        <label for="password2">Повторите пароль</label><br />
+                        <label for="password2">Пароль для подтверждения</label><br />
                         <input
                             type="password"
                             id="password2"
                             name="password2"
                             required
-                            {...register('password2')}
+                            {...register('password2', {
+                                onChange: matchPassword,
+                                validate: matchPassword
+                            })}
                         />
                         {errors.password2 && <p>{errors.password2.message}</p>}
                     </p>

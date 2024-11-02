@@ -1,6 +1,7 @@
 import './Cart.css';
 import { AddToCart, cart, DecrementItem, RemoveFromCart, useCartCount } from '../../Cart';
-import { useLoaderData } from 'react-router-dom';
+import { Link, useLoaderData } from 'react-router-dom';
+import { useAccount } from '../../Account';
 // import image1 from './../../product1.jpg';
 // import image2 from './../../product2.jpg';
 // import image3 from './../../product3.jpg';
@@ -19,7 +20,7 @@ var productPrice = Intl.NumberFormat("ru-RU", {
 });
 
 const fetchProduct = async (id) => {
-    const response = await fetch(`/collection/${id}`);
+    const response = await fetch(`/products/${id}`);
     if(response.ok)
         return await response.json();
     else if(response.status === 400) {
@@ -39,7 +40,7 @@ function CartProduct(props) {
     return (
         <div className="cart-product">
             <div>
-                <img src={ `/collection/images/${props.image}` } alt="product" />
+                <img src={ `/products/images/${props.image}` } alt="product" />
                 <b>{ props.name }</b>
             </div>
             <div>
@@ -63,6 +64,7 @@ function CartProducts() {
 export default function Cart() {
     const data = useLoaderData();
     const cartCount = useCartCount();
+    const { data: accountData } = useAccount();
     return (
         <div>
             <h1>Корзина</h1>
@@ -70,7 +72,7 @@ export default function Cart() {
             <hr />
             <h3>Всего товаров: {cartCount}</h3>
             <h2>Итого: {productPrice.format(data.filter((item) => item.id in cart).reduce((prev, cur) => prev + cur.price * cart[cur.id], 0))}</h2>
-            <button>Оплатить</button>
+            { accountData ? <button disabled={!cartCount}>Оплатить</button> : <p>Чтобы оформить заказ, сначала <Link to="/register">зарегистрируйтесь</Link> или <Link to="/login">войдите</Link> в свою учётную запись.</p> }
         </div>
     );
 }

@@ -1,11 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const port = 8080;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use("/collection/images", express.static("collection/images"));
+app.use("/products/images", express.static("products/images"));
 
 app.get("/users/:id", async (req, res) => {
     try {
@@ -38,6 +39,10 @@ app.get("/users/:id", async (req, res) => {
 
 app.post("/users/create", async (req, res) => {
     try {
+        if(req.body.password.length < 8) {
+            res.status(403).send("Пароль должен быть не менее 8 символов");
+            return;
+        }
         let occupiedTelephone = false, occupiedEmail = false;
         let user = await getUser({ telephone: req.body.telephone });
         if(user)
@@ -46,7 +51,16 @@ app.post("/users/create", async (req, res) => {
         if(user)
             occupiedEmail = true;
         if(!occupiedTelephone && !occupiedEmail) {
-            res.json({ userid: await registerUser(req.body) });
+            await User.sync();
+            const newuser = await User.create({
+                id: req.body.id,
+                surname: req.body.surname,
+                name: req.body.name,
+                telephone: req.body.telephone,
+                email: req.body.email,
+                password: req.body.password
+            });
+            res.json({ userid: newuser.id });
         }
         else {
             res.status(403).json({ occupiedTelephone, occupiedEmail });
@@ -79,7 +93,7 @@ app.post("/users/login", async (req, res) => {
     }
 });
 
-app.get("/collection", async (req, res) => {
+app.get("/products", async (req, res) => {
     try {
         const options = {
             raw: true,
@@ -103,7 +117,7 @@ app.get("/collection", async (req, res) => {
     }
 });
 
-app.get("/collection/categories", async (req, res) => {
+app.get("/products/categories", async (req, res) => {
     try {
         Category.sync();
         const categories = await Category.findAll({
@@ -118,15 +132,15 @@ app.get("/collection/categories", async (req, res) => {
     }
 });
 
-app.get("/collection/:id", async (req, res) => {
+app.get("/products/:id", async (req, res) => {
     try {
         const id = parseInt(req.params.id);
         if(isNaN(id)) {
             res.sendStatus(400);
             return;
         }
-        await Collection.sync();
-        const product = await Collection.findOne({
+        await Product.sync();
+        const product = await Product.findOne({
             raw: true,
             where: { id: req.params.id }
         });
@@ -138,7 +152,7 @@ app.get("/collection/:id", async (req, res) => {
     }
 });
 
-app.listen(8080);
+app.listen(port, () => console.log(`Listening on port ${port}`));
 
 const Sequelize = require("sequelize-hierarchy-next")();
 const Op = Sequelize.Op;
@@ -149,7 +163,7 @@ const sequelize = new Sequelize("postgres://postgres:1@localhost:5432/online-sto
     }
 });
 
-const Users = sequelize.define("users", {
+const User = sequelize.define("user", {
     surname: {
         type: Sequelize.STRING,
         allowNull: false
@@ -171,7 +185,7 @@ const Users = sequelize.define("users", {
         allowNull: false
     }
 });
-const Collection = sequelize.define("collection", {
+const Product = sequelize.define("product", {
     name: {
         type: Sequelize.STRING,
         allowNull: false
@@ -210,27 +224,14 @@ const Category = sequelize.define("category", {
     }
 });
 Category.isHierarchy();
-Category.hasMany(Collection, {
+Category.hasMany(Product, {
     foreignKey: "categoryId"
 });
-Collection.belongsTo(Category);
-
-async function registerUser(params) {
-    await Users.sync();
-    const user = await Users.create({
-        id: params.id,
-        surname: params.surname,
-        name: params.name,
-        telephone: params.telephone,
-        email: params.email,
-        password: params.password
-    });
-    return user.id;
-}
+Product.belongsTo(Category);
 
 async function getUser(params) {
-    await Users.sync();
-    return await Users.findOne({ raw: true, where: params });
+    await User.sync();
+    return await User.findOne({ raw: true, where: params });
 }
 
 async function getProducts(options, category = undefined) {
@@ -286,14 +287,14 @@ async function getProducts(options, category = undefined) {
         };
     }
     
-    await Collection.sync();
-    return await Collection.findAll(options);
+    await Product.sync();
+    return await Product.findAll(options);
 }
 /*
 async function fn() {
     await Category.sync({ force: true });
     await sequelize.models.categoryancestor.sync({ force: true });
-    await Collection.sync({ force: true });
+    await Product.sync({ force: true });
     {
         const id = (await Category.create({
             name: "Девочкам",
@@ -332,20 +333,20 @@ async function fn() {
                 refName: "kurtki",
                 parentId: id2
             })).id;
-            await Collection.create({
+            await Product.create({
                 name: "Куртка из материала Softshell",
                 categoryId: id3,
                 image: "product1.jpg",
                 price: 2999
             });
-            await Collection.create({
+            await Product.create({
                 name: "Куртка объёмная с капюшоном",
                 categoryId: id3,
                 image: "product2.jpg",
                 price: 3999,
                 sold: 1
             });
-            await Collection.create({
+            await Product.create({
                 name: "Куртка Hippasilla Розовая",
                 categoryId: id3,
                 image: "product3.jpg",
@@ -396,7 +397,7 @@ async function fn() {
                 refName: "kurtki",
                 parentId: id2
             })).id;
-            await Collection.create({
+            await Product.create({
                 name: "Легкая куртка для мальчиков Kappa",
                 categoryId: id3,
                 image: "product4.jpg",
@@ -409,7 +410,7 @@ async function fn() {
             });
         }
     }
-    // console.log(await Collection.findAll({
+    // console.log(await Product.findAll({
     //     raw: true,
     //     where: {
     //         [Op.or]: [

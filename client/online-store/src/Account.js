@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 
 const listeners = [];
-const account = {
-  data: undefined,
+export const account = {
+  data: null,
   isLoading: false,
   isError: false,
   setData: function(value) {
@@ -23,7 +23,7 @@ const account = {
   }
 };
 
-export async function fetchUserData({ userid, password }) {
+export async function fetchUserData(userid, password) {
   if(userid === undefined)
     userid = Cookies.get("userid");
   if(password === undefined)
@@ -56,7 +56,7 @@ export async function fetchUserData({ userid, password }) {
 }
 
 export function clearUserData() {
-  account.setData(undefined);
+  account.setData(null);
   account.setLoading(false);
   account.setError(false);
   Cookies.remove("userid");
@@ -69,7 +69,7 @@ export function useAccount() {
   const [isError, setError] = useState(account.isError);
   const handleFetch = () => {
     if(!account.data && !account.isLoading)
-      fetchUserData({});
+      fetchUserData();
   }
   useEffect(() => {
     const obj = { setData, setLoading, setError };

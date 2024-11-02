@@ -18,7 +18,7 @@ summary > a, details > ul > li > a {
     padding: 0 16px;
 }
 
-.catalog-container {
+.catalog-categories {
     width: 200px;
     border: 1px solid #ccc;
     border-radius: 3px;
